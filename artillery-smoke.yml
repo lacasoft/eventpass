@@ -1,0 +1,36 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    # Quick smoke test - 2 minutes
+    - duration: 120
+      arrivalRate: 5
+      name: "Smoke test - 5 users/sec"
+
+  ensure:
+    maxErrorRate: 5  # Allow up to 5% errors in smoke test
+    p95: 3000
+
+scenarios:
+  - name: "Health Check"
+    weight: 20
+    flow:
+      - get:
+          url: "/health"
+
+  - name: "Browse Events"
+    weight: 40
+    flow:
+      - get:
+          url: "/events"
+      - think: 1
+      - get:
+          url: "/venues"
+
+  - name: "User Login"
+    weight: 40
+    flow:
+      - post:
+          url: "/auth/login"
+          json:
+            email: "test@example.com"
+            password: "Test123!"

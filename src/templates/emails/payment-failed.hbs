@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago No Procesado - EventPass</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .error-box {
+            background: #fff3f3;
+            border-left: 4px solid #f5576c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .event-info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>❌ Pago No Procesado</h1>
+        <p>Hubo un problema con tu pago</p>
+    </div>
+
+    <div class="content">
+        <p>Hola <strong>{{userName}}</strong>,</p>
+
+        <p>Lamentamos informarte que tu pago no pudo ser procesado exitosamente.</p>
+
+        <div class="error-box">
+            <h3>⚠️ Motivo del Error</h3>
+            <p>{{errorMessage}}</p>
+        </div>
+
+        <div class="event-info">
+            <h3>📅 Detalles de la Reserva</h3>
+            <p><strong>Evento:</strong> {{eventTitle}}</p>
+            <p><strong>Monto:</strong> ${{total}}</p>
+            <p><strong>ID de Reserva:</strong> {{bookingId}}</p>
+        </div>
+
+        <h3>🔄 ¿Qué sigue?</h3>
+        <p>Puedes intentar nuevamente siguiendo estos pasos:</p>
+
+        <ol>
+            <li>Verifica que tu tarjeta tenga fondos suficientes</li>
+            <li>Asegúrate de que los datos de la tarjeta sean correctos</li>
+            <li>Contacta a tu banco si el problema persiste</li>
+            <li>Intenta con otro método de pago</li>
+        </ol>
+
+        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>📌 Nota Importante:</strong></p>
+            <p>Tu reserva ha sido cancelada y los boletos han sido liberados. Si deseas asistir al evento, deberás hacer una nueva reserva.</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="#" class="button">Intentar Nuevamente</a>
+        </div>
+
+        <p style="margin-top: 30px; color: #666;">
+            Si necesitas ayuda, no dudes en contactarnos. Estamos aquí para asistirte.
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>EventPass - Tu plataforma de boletos</p>
+        <p>Este es un correo automático, por favor no respondas.</p>
+    </div>
+</body>
+</html>

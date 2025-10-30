@@ -1,0 +1,63 @@
+# Node modules
+node_modules
+npm-debug.log
+
+# Build output
+dist
+build
+
+# Testing
+coverage
+.nyc_output
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+
+# IDEs
+.idea
+.vscode
+*.swp
+.DS_Store
+
+# Documentation
+*.md
+!README.md
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Logs
+logs
+*.log
+
+# Temporary files
+tmp
+temp
+.tmp
+
+# Database files
+*.sqlite
+*.db
+
+# Test files
+test
+**/*.spec.ts
+**/*.test.ts
+
+# Config files not needed in production
+.editorconfig
+.eslintrc*
+.prettierrc*
+jest.config.js

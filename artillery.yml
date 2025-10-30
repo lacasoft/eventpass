@@ -1,0 +1,190 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    # Phase 1: Warm up - Gradual increase
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up - 5 users/sec"
+
+    # Phase 2: Ramp up - Load increase
+    - duration: 120
+      arrivalRate: 10
+      rampTo: 30
+      name: "Ramp up - 10 to 30 users/sec"
+
+    # Phase 3: Sustained load
+    - duration: 300
+      arrivalRate: 30
+      name: "Sustained load - 30 users/sec"
+
+    # Phase 4: Spike test
+    - duration: 60
+      arrivalRate: 100
+      name: "Spike - 100 users/sec"
+
+    # Phase 5: Cool down
+    - duration: 60
+      arrivalRate: 10
+      name: "Cool down - 10 users/sec"
+
+  # Performance thresholds
+  ensure:
+    maxErrorRate: 1  # Max 1% error rate
+    p95: 2000        # 95th percentile response time < 2s
+    p99: 5000        # 99th percentile response time < 5s
+
+  # Variables
+  variables:
+    baseUrl: "http://localhost:3000"
+
+  # HTTP settings
+  http:
+    timeout: 10
+    pool: 50  # Max concurrent connections per user
+
+  # Plugins
+  plugins:
+    metrics-by-endpoint:
+      stripQueryString: true
+      ignoreUnknownEndpoints: false
+
+scenarios:
+  # Scenario 1: Public browsing (no auth required)
+  - name: "Browse Events - Public"
+    weight: 40
+    flow:
+      - get:
+          url: "/events"
+          capture:
+            - json: "$.items[0].id"
+              as: "eventId"
+      - think: 2
+      - get:
+          url: "/events/{{ eventId }}"
+      - think: 3
+      - get:
+          url: "/venues"
+
+  # Scenario 2: User registration and login
+  - name: "User Registration & Login"
+    weight: 20
+    flow:
+      - post:
+          url: "/auth/register"
+          json:
+            email: "loadtest-{{ $randomNumber() }}@example.com"
+            password: "LoadTest123!"
+            firstName: "Load"
+            lastName: "Test{{ $randomNumber() }}"
+            phone: "+56{{ $randomNumber(100000000, 999999999) }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+            - json: "$.user.id"
+              as: "userId"
+      - think: 2
+      - post:
+          url: "/auth/login"
+          json:
+            email: "loadtest-{{ $randomNumber() }}@example.com"
+            password: "LoadTest123!"
+
+  # Scenario 3: Authenticated user booking flow
+  - name: "Booking Flow - Authenticated"
+    weight: 30
+    beforeScenario: "registerAndLogin"
+    flow:
+      # Browse events
+      - get:
+          url: "/events?category=concert&limit=10"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          capture:
+            - json: "$.items[0].id"
+              as: "selectedEventId"
+      - think: 3
+
+      # View event details
+      - get:
+          url: "/events/{{ selectedEventId }}"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      - think: 5
+
+      # Attempt to create booking
+      - post:
+          url: "/bookings/reserve"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            eventId: "{{ selectedEventId }}"
+            quantity: 2
+          capture:
+            - json: "$.id"
+              as: "bookingId"
+      - think: 2
+
+      # View booking details
+      - get:
+          url: "/bookings/{{ bookingId }}"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+
+      # View my bookings
+      - get:
+          url: "/bookings/my-bookings"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+
+  # Scenario 4: Organizer viewing analytics
+  - name: "Organizer Analytics"
+    weight: 10
+    beforeScenario: "registerOrganizerAndLogin"
+    flow:
+      - get:
+          url: "/analytics/organizer/dashboard"
+          headers:
+            Authorization: "Bearer {{ organizerToken }}"
+      - think: 5
+      - get:
+          url: "/events"
+          headers:
+            Authorization: "Bearer {{ organizerToken }}"
+
+# Before scenarios - Setup functions
+before:
+  flow:
+    - log: "Starting Artillery load test"
+    - log: "Target: {{ baseUrl }}"
+
+# Helper scenarios
+beforeScenario:
+  - name: "registerAndLogin"
+    flow:
+      - post:
+          url: "/auth/register"
+          json:
+            email: "customer-{{ $randomNumber() }}@loadtest.com"
+            password: "Test123!"
+            firstName: "Customer"
+            lastName: "Test"
+            phone: "+56{{ $randomNumber(100000000, 999999999) }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+            - json: "$.user.id"
+              as: "userId"
+
+  - name: "registerOrganizerAndLogin"
+    flow:
+      - post:
+          url: "/auth/register"
+          json:
+            email: "organizer-{{ $randomNumber() }}@loadtest.com"
+            password: "Org123!"
+            firstName: "Organizer"
+            lastName: "Test"
+            phone: "+56{{ $randomNumber(100000000, 999999999) }}"
+          capture:
+            - json: "$.token"
+              as: "organizerToken"

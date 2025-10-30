@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tus Boletos - EventPass</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .event-info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+        .ticket {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 2px dashed #667eea;
+        }
+        .ticket-code {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+            padding: 10px;
+            background: #f0f4ff;
+            border-radius: 4px;
+            letter-spacing: 2px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 ¡Pago Confirmado!</h1>
+        <p>Tus boletos están listos</p>
+    </div>
+
+    <div class="content">
+        <p>Hola <strong>{{userName}}</strong>,</p>
+
+        <p>¡Excelentes noticias! Tu pago ha sido procesado exitosamente y tus boletos están confirmados.</p>
+
+        <div class="event-info">
+            <h2>📅 Detalles del Evento</h2>
+            <p><strong>Evento:</strong> {{eventTitle}}</p>
+            <p><strong>Fecha:</strong> {{eventDate}}</p>
+            <p><strong>Lugar:</strong> {{venueName}}</p>
+            <p><strong>Dirección:</strong> {{venueAddress}}</p>
+            <p><strong>Cantidad:</strong> {{quantity}} boleto(s)</p>
+            <p><strong>Total pagado:</strong> ${{total}}</p>
+        </div>
+
+        <h3>🎫 Tus Boletos</h3>
+        <p>Guarda estos códigos. Los necesitarás para ingresar al evento:</p>
+
+        {{#each tickets}}
+        <div class="ticket">
+            <div class="ticket-code">{{this.ticketCode}}</div>
+            <p style="text-align: center; margin: 5px 0; color: #666;">Estado: {{this.status}}</p>
+        </div>
+        {{/each}}
+
+        <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border-radius: 8px;">
+            <p><strong>⚠️ Importante:</strong></p>
+            <ul>
+                <li>Presenta estos códigos en la entrada del evento</li>
+                <li>Puedes mostrarlos en tu teléfono o imprimirlos</li>
+                <li>Cada código solo puede usarse una vez</li>
+                <li>Llega con tiempo suficiente antes del evento</li>
+            </ul>
+        </div>
+
+        <p style="text-align: center; margin-top: 30px;">
+            <small>ID de Reserva: {{bookingId}}</small>
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>EventPass - Tu plataforma de boletos</p>
+        <p>Este es un correo automático, por favor no respondas.</p>
+    </div>
+</body>
+</html>
