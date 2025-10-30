@@ -111,6 +111,7 @@ export class AppModule {
       .apply(RequestLoggingMiddleware)
       .exclude(
         { path: 'health', method: RequestMethod.ALL },
+        { path: 'health/advanced', method: RequestMethod.ALL },
         { path: 'metrics', method: RequestMethod.ALL },
       )
       .forRoutes('*');
@@ -123,6 +124,7 @@ export class AppModule {
       .apply(ApiKeyMiddleware)
       .exclude(
         { path: 'health', method: RequestMethod.ALL },
+        { path: 'health/advanced', method: RequestMethod.ALL },
         { path: 'metrics', method: RequestMethod.ALL },
         { path: '', method: RequestMethod.GET },
       )
