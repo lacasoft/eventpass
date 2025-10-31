@@ -39,6 +39,23 @@ THROTTLE_LOGIN_LIMIT=5       # 5 intentos por minuto
 THROTTLE_FORGOT_PASSWORD_LIMIT=3  # 3 intentos por minuto
 ```
 
+### 4. Límite de Ticket Scan
+
+**Aplicado a**: `POST /ticket-scan/scan`
+**Límite**: 10 intentos por minuto por IP
+**Propósito**: Prevenir escaneos accidentales repetidos y abuse del sistema
+**Configurable en**: `.env` → `THROTTLE_TICKET_SCAN_LIMIT`
+**Rol permitido**: `checker` únicamente
+
+```bash
+THROTTLE_TICKET_SCAN_LIMIT=10    # 10 escaneos por minuto
+```
+
+**Características adicionales**:
+- Combinado con idempotencia (header `Idempotency-Key`)
+- Previene doble escaneo incluso con retry
+- Rate limit per-IP protege contra abuse masivo
+
 ---
 
 ## Headers de Respuesta
@@ -289,6 +306,16 @@ for i in {1..7}; do
     -d '{"email":"test@test.com","password":"wrong"}'
   echo "Login attempt $i"
 done
+
+# Test ticket scan rate limit
+for i in {1..12}; do
+  curl -X POST http://localhost:3000/ticket-scan/scan \
+    -H "Authorization: Bearer $CHECKER_TOKEN" \
+    -H "Content-Type: application/json" \
+    -H "Idempotency-Key: key-$i" \
+    -d '{"code":"TKT-TEST","eventId":"event-id","venueId":"venue-id"}'
+  echo "Scan attempt $i"
+done
 ```
 
 ### Automated Testing
@@ -305,9 +332,10 @@ Ver tests E2E en:
 1. **Aumentar límites para producción**:
 ```bash
 # .env.production
-THROTTLE_LIMIT=500           # More lenient for production traffic
-THROTTLE_LOGIN_LIMIT=10      # Still strict for security
+THROTTLE_LIMIT=500                      # More lenient for production traffic
+THROTTLE_LOGIN_LIMIT=10                 # Still strict for security
 THROTTLE_FORGOT_PASSWORD_LIMIT=5
+THROTTLE_TICKET_SCAN_LIMIT=20          # Más alto para eventos masivos
 ```
 
 2. **Usar Redis para rate limiting distribuido**:
@@ -389,5 +417,17 @@ Para reportar problemas o sugerencias sobre rate limiting:
 
 ---
 
-**Última actualización**: 2025-10-30
-**Versión**: 1.0.0
+## Ver También
+
+- [Documentación de Ticket Scan](./TICKET-SCAN.md) - Detalles sobre idempotencia y rate limiting de escaneos
+- [Documentación de CHECKER](./CHECKER.md) - Rol y permisos de checkers
+- [Documentación de Seguridad](./SECURITY.md) - Mejores prácticas de seguridad
+
+---
+
+**Última actualización**: 2025-10-31
+**Versión**: 1.1.0
+
+**Changelog**:
+- v1.1.0 (2025-10-31): Añadido rate limiting para ticket scan endpoint
+- v1.0.0 (2025-10-30): Versión inicial

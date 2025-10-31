@@ -76,9 +76,9 @@ describe('AdminUsersController', () => {
         temporaryPassword,
       });
 
-      const result = await controller.createUserByAdmin(createDto);
+      const result = await controller.createUserByAdmin(createDto, UserRole.SUPER_ADMIN);
 
-      expect(usersService.createUserByAdmin).toHaveBeenCalledWith(createDto);
+      expect(usersService.createUserByAdmin).toHaveBeenCalledWith(createDto, UserRole.SUPER_ADMIN);
       expect(result.user).toHaveProperty('temporaryPassword', temporaryPassword);
       expect(result.user).toHaveProperty('email', 'organizer@example.com');
       expect(result.user).toHaveProperty('role', UserRole.ORGANIZADOR);
@@ -101,9 +101,9 @@ describe('AdminUsersController', () => {
         temporaryPassword,
       });
 
-      const result = await controller.createUserByAdmin(adminDto);
+      const result = await controller.createUserByAdmin(adminDto, UserRole.SUPER_ADMIN);
 
-      expect(usersService.createUserByAdmin).toHaveBeenCalledWith(adminDto);
+      expect(usersService.createUserByAdmin).toHaveBeenCalledWith(adminDto, UserRole.SUPER_ADMIN);
       expect(result.user).toHaveProperty('role', UserRole.ADMIN);
       expect(result.user).toHaveProperty('temporaryPassword', temporaryPassword);
     });
@@ -115,7 +115,7 @@ describe('AdminUsersController', () => {
         temporaryPassword,
       });
 
-      const result = await controller.createUserByAdmin(createDto);
+      const result = await controller.createUserByAdmin(createDto, UserRole.SUPER_ADMIN);
 
       expect(result.user).not.toHaveProperty('password');
       expect(result.user).toHaveProperty('temporaryPassword');
@@ -128,7 +128,7 @@ describe('AdminUsersController', () => {
         temporaryPassword,
       });
 
-      const result = await controller.createUserByAdmin(createDto);
+      const result = await controller.createUserByAdmin(createDto, UserRole.SUPER_ADMIN);
 
       expect(result.user.temporaryPassword).toBe(temporaryPassword);
       expect(result.user.temporaryPassword).toHaveLength(16);
@@ -141,7 +141,7 @@ describe('AdminUsersController', () => {
         temporaryPassword,
       });
 
-      const result = await controller.createUserByAdmin(createDto);
+      const result = await controller.createUserByAdmin(createDto, UserRole.SUPER_ADMIN);
 
       expect(result.user.mustChangePassword).toBe(true);
     });
@@ -151,14 +151,14 @@ describe('AdminUsersController', () => {
         new ConflictException('Email already exists'),
       );
 
-      await expect(controller.createUserByAdmin(createDto)).rejects.toThrow(ConflictException);
-      await expect(controller.createUserByAdmin(createDto)).rejects.toThrow('Email already exists');
+      await expect(controller.createUserByAdmin(createDto, UserRole.SUPER_ADMIN)).rejects.toThrow(ConflictException);
+      await expect(controller.createUserByAdmin(createDto, UserRole.SUPER_ADMIN)).rejects.toThrow('Email already exists');
     });
 
     it('should propagate service errors', async () => {
       mockUsersService.createUserByAdmin.mockRejectedValue(new Error('Database error'));
 
-      await expect(controller.createUserByAdmin(createDto)).rejects.toThrow('Database error');
+      await expect(controller.createUserByAdmin(createDto, UserRole.SUPER_ADMIN)).rejects.toThrow('Database error');
     });
 
     it('should return all user fields except password', async () => {
@@ -168,7 +168,7 @@ describe('AdminUsersController', () => {
         temporaryPassword,
       });
 
-      const result = await controller.createUserByAdmin(createDto);
+      const result = await controller.createUserByAdmin(createDto, UserRole.SUPER_ADMIN);
 
       expect(result.user).toHaveProperty('id');
       expect(result.user).toHaveProperty('email');
@@ -196,7 +196,7 @@ describe('AdminUsersController', () => {
         temporaryPassword,
       });
 
-      const result = await controller.createUserByAdmin(dtoWithoutPhone);
+      const result = await controller.createUserByAdmin(dtoWithoutPhone, UserRole.SUPER_ADMIN);
 
       expect(result.user.phone).toBeNull();
     });

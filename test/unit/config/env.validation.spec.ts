@@ -34,6 +34,8 @@ describe('Environment Validation', () => {
     THROTTLE_TTL: '60000',
     THROTTLE_LIMIT: '100',
     THROTTLE_LOGIN_LIMIT: '5',
+    THROTTLE_FORGOT_PASSWORD_LIMIT: '3',
+    THROTTLE_TICKET_SCAN_LIMIT: '10',
     SUPER_ADMIN_EMAIL: 'admin@test.com',
     SUPER_ADMIN_PASSWORD: 'TestPassword123!',
     SUPER_ADMIN_FIRST_NAME: 'Admin',

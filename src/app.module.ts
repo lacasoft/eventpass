@@ -39,6 +39,8 @@ import { PaymentsModule } from './modules/payments/payments.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { LoggerModule } from './common/logger/logger.module';
+import { CheckerAssignmentsModule } from './modules/checker-assignments/checker-assignments.module';
+import { TicketScanModule } from './modules/ticket-scan/ticket-scan.module';
 
 @Module({
   imports: [
@@ -96,6 +98,8 @@ import { LoggerModule } from './common/logger/logger.module';
     PaymentsModule,
     AnalyticsModule,
     JobsModule, // Módulo de Jobs para gestionar tareas programadas
+    CheckerAssignmentsModule, // Módulo de asignaciones de CHECKERs a recintos y eventos
+    TicketScanModule, // Módulo de escaneo de tickets para CHECKERs
   ],
   providers: [
     {

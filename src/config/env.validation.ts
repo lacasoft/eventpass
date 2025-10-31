@@ -169,6 +169,16 @@ export class EnvironmentVariables {
   @Min(1)
   THROTTLE_LOGIN_LIMIT: number;
 
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  THROTTLE_FORGOT_PASSWORD_LIMIT: number;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  THROTTLE_TICKET_SCAN_LIMIT: number;
+
   // Super Admin User
   @IsEmail()
   SUPER_ADMIN_EMAIL: string;
@@ -240,6 +250,28 @@ export class EnvironmentVariables {
 
   @IsEnum(StripeCurrency)
   STRIPE_CURRENCY: StripeCurrency;
+
+  // Jobs Configuration
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  BOOKING_EXPIRATION_TIME?: number;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  CLEANUP_EXPIRED_BOOKINGS_INTERVAL?: number;
+
+  @IsString()
+  @IsOptional()
+  COMPLETE_PAST_EVENTS_TIME?: string;
+
+  // Logging Configuration
+  @IsString()
+  @IsOptional()
+  LOG_LEVEL?: string;
 }
 
 /**

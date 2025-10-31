@@ -370,12 +370,14 @@ export class UsersService {
   }
 
   /**
-   * Crea un usuario con rol organizador o admin (solo para super_admin)
+   * Crea un usuario con rol organizador, checker o admin
    * @param createUserByAdminDto - Datos del usuario a crear
+   * @param currentUserRole - Rol del usuario que está creando
    * @returns Usuario creado con contraseña temporal
    */
   async createUserByAdmin(
     createUserByAdminDto: CreateUserByAdminDto,
+    currentUserRole: UserRole,
   ): Promise<{ user: User; temporaryPassword: string }> {
     // Verificar que el email no esté en uso
     const existingUser = await this.userRepository.findByEmail(createUserByAdminDto.email);
@@ -383,7 +385,13 @@ export class UsersService {
       throw new ConflictException('Email already exists');
     }
 
-    // No es necesario validar super_admin aquí porque el DTO ya lo hace con @Validate
+    // Validar permisos según el rol del usuario actual
+    // ADMIN solo puede crear CHECKER
+    if (currentUserRole === UserRole.ADMIN && createUserByAdminDto.role !== UserRole.CHECKER) {
+      throw new ForbiddenException('Admin users can only create checker users');
+    }
+
+    // SUPER_ADMIN puede crear ORGANIZADOR, CHECKER y ADMIN (el DTO ya valida que no sea SUPER_ADMIN)
 
     // Generar contraseña temporal
     const temporaryPassword = PasswordUtil.generateTemporaryPassword();

@@ -10,6 +10,10 @@ export const THROTTLE_FORGOT_PASSWORD_LIMIT = parseInt(
   process.env.THROTTLE_FORGOT_PASSWORD_LIMIT || '3',
   10,
 );
+export const THROTTLE_TICKET_SCAN_LIMIT = parseInt(
+  process.env.THROTTLE_TICKET_SCAN_LIMIT || '10',
+  10,
+);
 
 /**
  * Configuración de throttle para login
@@ -29,6 +33,17 @@ export const LOGIN_THROTTLE_CONFIG = {
 export const FORGOT_PASSWORD_THROTTLE_CONFIG = {
   default: {
     limit: THROTTLE_FORGOT_PASSWORD_LIMIT,
+    ttl: THROTTLE_TTL,
+  },
+};
+
+/**
+ * Configuración de throttle para ticket scan
+ * Default: 10 intentos por minuto (para prevenir escaneos accidentales repetidos)
+ */
+export const TICKET_SCAN_THROTTLE_CONFIG = {
+  default: {
+    limit: THROTTLE_TICKET_SCAN_LIMIT,
     ttl: THROTTLE_TTL,
   },
 };

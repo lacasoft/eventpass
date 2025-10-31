@@ -94,11 +94,12 @@ export class AdminUsersController {
   }
 
   @Post()
-  @Roles(UserRole.SUPER_ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({
-    summary: 'Crear organizador o admin',
+    summary: 'Crear usuario (organizador, checker o admin)',
     description:
-      'Permite a un super_admin crear usuarios con roles de organizador o admin. ' +
+      'Permite a super_admin crear usuarios con roles de organizador, checker o admin. ' +
+      'Los admin solo pueden crear usuarios con rol checker. ' +
       'Se genera una contraseña temporal que debe ser cambiada en el primer inicio de sesión.',
   })
   @ApiResponse({
@@ -135,12 +136,11 @@ export class AdminUsersController {
   })
   @ApiResponse({
     status: 403,
-    description: 'No tiene permisos de super_admin',
+    description: 'No tiene permisos suficientes o intenta crear un rol no permitido',
     schema: {
       example: {
         statusCode: 403,
-        message:
-          "User role 'admin' does not have permission to access this resource. Required roles: super-admin",
+        message: 'Admin users can only create checker users',
         error: 'Forbidden',
       },
     },
@@ -156,9 +156,12 @@ export class AdminUsersController {
       },
     },
   })
-  async createUserByAdmin(@Body() createUserByAdminDto: CreateUserByAdminDto) {
+  async createUserByAdmin(
+    @Body() createUserByAdminDto: CreateUserByAdminDto,
+    @CurrentUser('role') currentUserRole: UserRole,
+  ) {
     const { user, temporaryPassword } =
-      await this.usersService.createUserByAdmin(createUserByAdminDto);
+      await this.usersService.createUserByAdmin(createUserByAdminDto, currentUserRole);
 
     // Excluir el password hasheado de la respuesta
     const { password, ...userWithoutPassword } = user;

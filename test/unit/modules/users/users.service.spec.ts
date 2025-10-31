@@ -564,7 +564,7 @@ describe('UsersService', () => {
       userRepository.create.mockReturnValue(mockUser as any);
       userRepository.save.mockResolvedValue(mockUser as any);
 
-      const result = await service.createUserByAdmin(createByAdminDto);
+      const result = await service.createUserByAdmin(createByAdminDto, UserRole.SUPER_ADMIN);
 
       expect(result.user).toBeDefined();
       expect(result.temporaryPassword).toBe('TempPass123!');
@@ -577,7 +577,7 @@ describe('UsersService', () => {
       userRepository.create.mockReturnValue(mockUser as any);
       userRepository.save.mockResolvedValue({ ...mockUser, mustChangePassword: true } as any);
 
-      const result = await service.createUserByAdmin(createByAdminDto);
+      const result = await service.createUserByAdmin(createByAdminDto, UserRole.SUPER_ADMIN);
 
       expect(userRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -589,11 +589,83 @@ describe('UsersService', () => {
     it('should throw ConflictException if email already exists', async () => {
       userRepository.findByEmail.mockResolvedValue(mockUser as any);
 
-      await expect(service.createUserByAdmin(createByAdminDto)).rejects.toThrow(
+      await expect(service.createUserByAdmin(createByAdminDto, UserRole.SUPER_ADMIN)).rejects.toThrow(
         ConflictException,
       );
-      await expect(service.createUserByAdmin(createByAdminDto)).rejects.toThrow(
+      await expect(service.createUserByAdmin(createByAdminDto, UserRole.SUPER_ADMIN)).rejects.toThrow(
         'Email already exists',
+      );
+    });
+
+    it('should allow SUPER_ADMIN to create ORGANIZADOR', async () => {
+      userRepository.findByEmail.mockResolvedValue(null);
+      userRepository.create.mockReturnValue(mockUser as any);
+      userRepository.save.mockResolvedValue(mockUser as any);
+
+      const result = await service.createUserByAdmin(createByAdminDto, UserRole.SUPER_ADMIN);
+
+      expect(result.user).toBeDefined();
+    });
+
+    it('should allow SUPER_ADMIN to create ADMIN', async () => {
+      const adminDto: CreateUserByAdminDto = {
+        ...createByAdminDto,
+        role: UserRole.ADMIN as UserRole.ADMIN
+      };
+      userRepository.findByEmail.mockResolvedValue(null);
+      userRepository.create.mockReturnValue(mockUser as any);
+      userRepository.save.mockResolvedValue(mockUser as any);
+
+      const result = await service.createUserByAdmin(adminDto, UserRole.SUPER_ADMIN);
+
+      expect(result.user).toBeDefined();
+    });
+
+    it('should allow SUPER_ADMIN to create CHECKER', async () => {
+      const checkerDto: CreateUserByAdminDto = {
+        ...createByAdminDto,
+        role: UserRole.CHECKER as UserRole.CHECKER
+      };
+      userRepository.findByEmail.mockResolvedValue(null);
+      userRepository.create.mockReturnValue(mockUser as any);
+      userRepository.save.mockResolvedValue(mockUser as any);
+
+      const result = await service.createUserByAdmin(checkerDto, UserRole.SUPER_ADMIN);
+
+      expect(result.user).toBeDefined();
+    });
+
+    it('should allow ADMIN to create CHECKER', async () => {
+      const checkerDto: CreateUserByAdminDto = {
+        ...createByAdminDto,
+        role: UserRole.CHECKER as UserRole.CHECKER
+      };
+      userRepository.findByEmail.mockResolvedValue(null);
+      userRepository.create.mockReturnValue(mockUser as any);
+      userRepository.save.mockResolvedValue(mockUser as any);
+
+      const result = await service.createUserByAdmin(checkerDto, UserRole.ADMIN);
+
+      expect(result.user).toBeDefined();
+    });
+
+    it('should throw ForbiddenException when ADMIN tries to create ORGANIZADOR', async () => {
+      userRepository.findByEmail.mockResolvedValue(null);
+
+      await expect(service.createUserByAdmin(createByAdminDto, UserRole.ADMIN)).rejects.toThrow(
+        'Admin users can only create checker users',
+      );
+    });
+
+    it('should throw ForbiddenException when ADMIN tries to create ADMIN', async () => {
+      const adminDto: CreateUserByAdminDto = {
+        ...createByAdminDto,
+        role: UserRole.ADMIN as UserRole.ADMIN
+      };
+      userRepository.findByEmail.mockResolvedValue(null);
+
+      await expect(service.createUserByAdmin(adminDto, UserRole.ADMIN)).rejects.toThrow(
+        'Admin users can only create checker users',
       );
     });
   });

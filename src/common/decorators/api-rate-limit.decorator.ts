@@ -79,3 +79,10 @@ export function ApiLoginRateLimit() {
 export function ApiForgotPasswordRateLimit() {
   return ApiRateLimit({ limit: 3, window: '1 minute' });
 }
+
+/**
+ * Documents ticket scan rate limit (10 requests/minute)
+ */
+export function ApiTicketScanRateLimit() {
+  return ApiRateLimit({ limit: 10, window: '1 minute' });
+}
