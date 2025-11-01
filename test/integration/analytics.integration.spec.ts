@@ -136,7 +136,7 @@ describe('Analytics Integration Tests', () => {
         password: 'Password123!',
         firstName: 'Test',
         lastName: 'Organizer',
-        role: UserRole.ORGANIZADOR,
+        role: UserRole.ORGANIZER,
       },
       UserRole.SUPER_ADMIN,
     );
@@ -331,7 +331,7 @@ describe('Analytics Integration Tests', () => {
           password: 'Password123!',
           firstName: 'Other',
           lastName: 'Organizer',
-          role: UserRole.ORGANIZADOR,
+          role: UserRole.ORGANIZER,
         },
         UserRole.SUPER_ADMIN,
       );
@@ -480,7 +480,7 @@ describe('Analytics Integration Tests', () => {
           password: 'Password123!',
           firstName: 'Other',
           lastName: 'Organizer',
-          role: UserRole.ORGANIZADOR,
+          role: UserRole.ORGANIZER,
         },
         UserRole.SUPER_ADMIN,
       );

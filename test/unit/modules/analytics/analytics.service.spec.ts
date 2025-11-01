@@ -177,10 +177,10 @@ describe('AnalyticsService', () => {
       mockEventRepository.findOne.mockResolvedValue(null);
 
       await expect(
-        service.getEventStats('non-existent-id', 'user-id', UserRole.ORGANIZADOR),
+        service.getEventStats('non-existent-id', 'user-id', UserRole.ORGANIZER),
       ).rejects.toThrow(NotFoundException);
       await expect(
-        service.getEventStats('non-existent-id', 'user-id', UserRole.ORGANIZADOR),
+        service.getEventStats('non-existent-id', 'user-id', UserRole.ORGANIZER),
       ).rejects.toThrow('Evento no encontrado');
     });
 
@@ -188,10 +188,10 @@ describe('AnalyticsService', () => {
       mockEventRepository.findOne.mockResolvedValue(mockEvent);
 
       await expect(
-        service.getEventStats('event-uuid-123', 'different-user-id', UserRole.ORGANIZADOR),
+        service.getEventStats('event-uuid-123', 'different-user-id', UserRole.ORGANIZER),
       ).rejects.toThrow(ForbiddenException);
       await expect(
-        service.getEventStats('event-uuid-123', 'different-user-id', UserRole.ORGANIZADOR),
+        service.getEventStats('event-uuid-123', 'different-user-id', UserRole.ORGANIZER),
       ).rejects.toThrow('No tienes permiso para ver las estadísticas de este evento');
     });
 
@@ -217,7 +217,7 @@ describe('AnalyticsService', () => {
       const result = await service.getEventStats(
         'event-uuid-123',
         'organizer-uuid-123',
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
 
       expect(result.event.id).toBe('event-uuid-123');
@@ -238,7 +238,7 @@ describe('AnalyticsService', () => {
       const result = await service.getEventStats(
         'event-uuid-123',
         'organizer-uuid-123',
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
 
       // 115 total / 2 tickets = 57.5 per ticket
@@ -253,7 +253,7 @@ describe('AnalyticsService', () => {
       const result = await service.getEventStats(
         'event-uuid-123',
         'organizer-uuid-123',
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
 
       expect(result.salesOverTime).toBeDefined();
@@ -273,7 +273,7 @@ describe('AnalyticsService', () => {
       const result = await service.getEventStats(
         'event-uuid-123',
         'organizer-uuid-123',
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
 
       expect(result.stats.totalBookings).toBe(0);

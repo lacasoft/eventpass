@@ -47,7 +47,7 @@ export class EventsController {
   ) {}
 
   @Post()
-  @Roles(UserRole.ORGANIZADOR, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.ORGANIZER, UserRole.SUPER_ADMIN)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Crear un nuevo evento' })
   @ApiBody({ type: CreateEventDto })
@@ -108,7 +108,7 @@ export class EventsController {
       example: {
         statusCode: 403,
         message:
-          "User role 'cliente' does not have permission to access this resource. Required roles: organizer, super_admin",
+          "User role 'customer' does not have permission to access this resource. Required roles: organizer, super_admin",
         error: 'Forbidden',
       },
     },
@@ -226,7 +226,7 @@ export class EventsController {
   }
 
   @Get('my-events')
-  @Roles(UserRole.ORGANIZADOR, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.ORGANIZER, UserRole.SUPER_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Listar mis eventos (organizador)',
@@ -298,7 +298,7 @@ export class EventsController {
           email: 'organizer@example.com',
           firstName: 'Juan',
           lastName: 'Pérez',
-          role: 'organizador',
+          role: 'organizer',
         },
         createdAt: '2025-01-28T10:30:00.000Z',
         updatedAt: '2025-01-28T10:30:00.000Z',
@@ -322,7 +322,7 @@ export class EventsController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ORGANIZADOR, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.ORGANIZER, UserRole.SUPER_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Actualizar un evento',
@@ -380,7 +380,7 @@ export class EventsController {
   }
 
   @Patch(':id/cancel')
-  @Roles(UserRole.ORGANIZADOR, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.ORGANIZER, UserRole.SUPER_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Cancelar un evento',

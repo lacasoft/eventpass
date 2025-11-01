@@ -69,10 +69,10 @@ export class CreateUserByAdminDto {
   @ApiProperty({
     description: 'Rol del usuario (organizer, checker o admin)',
     example: 'organizer',
-    enum: [UserRole.ORGANIZADOR, UserRole.CHECKER, UserRole.ADMIN],
+    enum: ['organizer', 'checker', 'admin'],
   })
-  @IsEnum(UserRole, { message: 'Rol debe ser organizer, checker o admin' })
   @IsNotEmpty({ message: 'Rol es requerido' })
+  @IsEnum(UserRole, { message: 'Role debe ser organizer, checker o admin' })
   @Validate(IsNotSuperAdminConstraint)
-  role: UserRole.ORGANIZADOR | UserRole.CHECKER | UserRole.ADMIN;
+  role: UserRole;
 }

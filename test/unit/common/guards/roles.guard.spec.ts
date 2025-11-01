@@ -19,7 +19,7 @@ describe('RolesGuard', () => {
       user: {
         id: 'user-123',
         email: 'test@example.com',
-        role: UserRole.CLIENTE,
+        role: UserRole.CUSTOMER,
       },
     };
 
@@ -60,7 +60,7 @@ describe('RolesGuard', () => {
     });
 
     it('should return true when user has required role', () => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.CLIENTE]);
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.CUSTOMER]);
 
       const result = guard.canActivate(mockExecutionContext);
 
@@ -77,21 +77,21 @@ describe('RolesGuard', () => {
 
     it('should throw ForbiddenException when user lacks required role', () => {
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.ADMIN]);
-      mockRequest.user.role = UserRole.CLIENTE;
+      mockRequest.user.role = UserRole.CUSTOMER;
 
       expect(() => guard.canActivate(mockExecutionContext)).toThrow(ForbiddenException);
       expect(() => guard.canActivate(mockExecutionContext)).toThrow(
-        `User role '${UserRole.CLIENTE}' does not have permission`,
+        `User role '${UserRole.CUSTOMER}' does not have permission`,
       );
     });
 
     it('should return true when user has one of multiple required roles', () => {
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([
         UserRole.ADMIN,
-        UserRole.ORGANIZADOR,
-        UserRole.CLIENTE,
+        UserRole.ORGANIZER,
+        UserRole.CUSTOMER,
       ]);
-      mockRequest.user.role = UserRole.ORGANIZADOR;
+      mockRequest.user.role = UserRole.ORGANIZER;
 
       const result = guard.canActivate(mockExecutionContext);
 
@@ -105,7 +105,7 @@ describe('RolesGuard', () => {
       mockExecutionContext.getHandler = jest.fn().mockReturnValue(mockHandler);
       mockExecutionContext.getClass = jest.fn().mockReturnValue(mockClass);
 
-      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.CLIENTE]);
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.CUSTOMER]);
 
       guard.canActivate(mockExecutionContext);
 
@@ -133,8 +133,8 @@ describe('RolesGuard', () => {
     });
 
     it('should allow ORGANIZADOR role', () => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.ORGANIZADOR]);
-      mockRequest.user.role = UserRole.ORGANIZADOR;
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.ORGANIZER]);
+      mockRequest.user.role = UserRole.ORGANIZER;
 
       const result = guard.canActivate(mockExecutionContext);
 
@@ -142,8 +142,8 @@ describe('RolesGuard', () => {
     });
 
     it('should allow CUSTOMER role', () => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.CLIENTE]);
-      mockRequest.user.role = UserRole.CLIENTE;
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.CUSTOMER]);
+      mockRequest.user.role = UserRole.CUSTOMER;
 
       const result = guard.canActivate(mockExecutionContext);
 
@@ -154,7 +154,7 @@ describe('RolesGuard', () => {
   describe('error messages', () => {
     it('should include required roles in error message', () => {
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.ADMIN, UserRole.SUPER_ADMIN]);
-      mockRequest.user.role = UserRole.CLIENTE;
+      mockRequest.user.role = UserRole.CUSTOMER;
 
       expect(() => guard.canActivate(mockExecutionContext)).toThrow(
         `Required roles: ${UserRole.ADMIN}, ${UserRole.SUPER_ADMIN}`,
@@ -162,16 +162,16 @@ describe('RolesGuard', () => {
     });
 
     it('should show single required role', () => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.ORGANIZADOR]);
-      mockRequest.user.role = UserRole.CLIENTE;
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.ORGANIZER]);
+      mockRequest.user.role = UserRole.CUSTOMER;
 
-      expect(() => guard.canActivate(mockExecutionContext)).toThrow(`Required roles: ${UserRole.ORGANIZADOR}`);
+      expect(() => guard.canActivate(mockExecutionContext)).toThrow(`Required roles: ${UserRole.ORGANIZER}`);
     });
   });
 
   describe('edge cases', () => {
     it('should handle undefined user', () => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.CLIENTE]);
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.CUSTOMER]);
       mockRequest.user = undefined;
 
       expect(() => guard.canActivate(mockExecutionContext)).toThrow(ForbiddenException);
@@ -180,7 +180,7 @@ describe('RolesGuard', () => {
 
     it('should handle empty roles array', () => {
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([]);
-      mockRequest.user.role = UserRole.CLIENTE;
+      mockRequest.user.role = UserRole.CUSTOMER;
 
       expect(() => guard.canActivate(mockExecutionContext)).toThrow(ForbiddenException);
     });
@@ -195,7 +195,7 @@ describe('RolesGuard', () => {
 
 
     it('should handle user with invalid role', () => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.CLIENTE]);
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.CUSTOMER]);
       mockRequest.user.role = 'invalid-role' as UserRole;
 
       expect(() => guard.canActivate(mockExecutionContext)).toThrow(ForbiddenException);
@@ -205,11 +205,11 @@ describe('RolesGuard', () => {
   describe('multiple roles scenarios', () => {
     it('should allow when user has first role in list', () => {
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([
-        UserRole.CLIENTE,
-        UserRole.ORGANIZADOR,
+        UserRole.CUSTOMER,
+        UserRole.ORGANIZER,
         UserRole.ADMIN,
       ]);
-      mockRequest.user.role = UserRole.CLIENTE;
+      mockRequest.user.role = UserRole.CUSTOMER;
 
       const result = guard.canActivate(mockExecutionContext);
 
@@ -218,11 +218,11 @@ describe('RolesGuard', () => {
 
     it('should allow when user has middle role in list', () => {
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([
-        UserRole.CLIENTE,
-        UserRole.ORGANIZADOR,
+        UserRole.CUSTOMER,
+        UserRole.ORGANIZER,
         UserRole.ADMIN,
       ]);
-      mockRequest.user.role = UserRole.ORGANIZADOR;
+      mockRequest.user.role = UserRole.ORGANIZER;
 
       const result = guard.canActivate(mockExecutionContext);
 
@@ -231,8 +231,8 @@ describe('RolesGuard', () => {
 
     it('should allow when user has last role in list', () => {
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([
-        UserRole.CLIENTE,
-        UserRole.ORGANIZADOR,
+        UserRole.CUSTOMER,
+        UserRole.ORGANIZER,
         UserRole.ADMIN,
       ]);
       mockRequest.user.role = UserRole.ADMIN;
@@ -244,7 +244,7 @@ describe('RolesGuard', () => {
 
     it('should deny when user has none of required roles', () => {
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.ADMIN, UserRole.SUPER_ADMIN]);
-      mockRequest.user.role = UserRole.CLIENTE;
+      mockRequest.user.role = UserRole.CUSTOMER;
 
       expect(() => guard.canActivate(mockExecutionContext)).toThrow(ForbiddenException);
     });

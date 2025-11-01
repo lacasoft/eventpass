@@ -123,7 +123,13 @@ export class EmailService {
         return;
       }
 
-      const html = template(data);
+      const appConfig = this.configService.get('email.app');
+
+      const html = template({
+        ...data,
+        appName: appConfig.name,
+        supportEmail: appConfig.supportEmail,
+      });
 
       const fromConfig = this.configService.get('email.from');
 
@@ -156,7 +162,13 @@ export class EmailService {
         return;
       }
 
-      const html = template(data);
+      const appConfig = this.configService.get('email.app');
+
+      const html = template({
+        ...data,
+        appName: appConfig.name,
+        supportEmail: appConfig.supportEmail,
+      });
 
       const fromConfig = this.configService.get('email.from');
 
@@ -195,10 +207,14 @@ export class EmailService {
       const frontendUrl = this.configService.get<string>('FRONTEND_URL');
       const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
 
+      const appConfig = this.configService.get('email.app');
+
       const html = template({
         userName,
         resetUrl,
         year: new Date().getFullYear(),
+        appName: appConfig.name,
+        supportEmail: appConfig.supportEmail,
       });
 
       const fromConfig = this.configService.get('email.from');
@@ -233,9 +249,13 @@ export class EmailService {
         return;
       }
 
+      const appConfig = this.configService.get('email.app');
+
       const html = template({
         userName,
         year: new Date().getFullYear(),
+        appName: appConfig.name,
+        supportEmail: appConfig.supportEmail,
       });
 
       const fromConfig = this.configService.get('email.from');

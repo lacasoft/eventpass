@@ -164,7 +164,7 @@ describe('CheckerAssignmentsService', () => {
     });
 
     it('should throw BadRequestException when user is not a CHECKER', async () => {
-      const nonChecker = { ...mockChecker, role: UserRole.CLIENTE };
+      const nonChecker = { ...mockChecker, role: UserRole.CUSTOMER };
       mockUserRepository.findOne.mockResolvedValue(nonChecker);
 
       await expect(

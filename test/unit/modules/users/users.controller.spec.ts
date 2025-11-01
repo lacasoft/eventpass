@@ -13,7 +13,7 @@ describe('UsersController', () => {
     firstName: 'John',
     lastName: 'Doe',
     phone: '+1234567890',
-    role: UserRole.CLIENTE,
+    role: UserRole.CUSTOMER,
     password: 'hashed_password',
     isActive: true,
     mustChangePassword: false,

@@ -19,7 +19,7 @@ export class Migration1761780965124 implements MigrationInterface {
             )
         `);
     await queryRunner.query(`
-            CREATE TYPE "public"."users_role_enum" AS ENUM('cliente', 'organizador', 'admin', 'super-admin')
+            CREATE TYPE "public"."users_role_enum" AS ENUM('customer', 'organizer', 'admin', 'super-admin')
         `);
     await queryRunner.query(`
             CREATE TABLE "users" (
@@ -29,7 +29,7 @@ export class Migration1761780965124 implements MigrationInterface {
                 "firstName" character varying,
                 "lastName" character varying,
                 "phone" character varying,
-                "role" "public"."users_role_enum" NOT NULL DEFAULT 'cliente',
+                "role" "public"."users_role_enum" NOT NULL DEFAULT 'customer',
                 "isActive" boolean NOT NULL DEFAULT true,
                 "mustChangePassword" boolean NOT NULL DEFAULT false,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),

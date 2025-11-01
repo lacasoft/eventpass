@@ -178,14 +178,14 @@ describe('AnalyticsController', () => {
       const result = await controller.getEventStats(
         'event-uuid-123',
         'organizer-uuid-123',
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
 
       expect(result).toEqual(mockEventStats);
       expect(analyticsService.getEventStats).toHaveBeenCalledWith(
         'event-uuid-123',
         'organizer-uuid-123',
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
     });
 
@@ -223,7 +223,7 @@ describe('AnalyticsController', () => {
       analyticsService.getEventStats.mockRejectedValue(error);
 
       await expect(
-        controller.getEventStats('non-existent-id', 'organizer-uuid-123', UserRole.ORGANIZADOR),
+        controller.getEventStats('non-existent-id', 'organizer-uuid-123', UserRole.ORGANIZER),
       ).rejects.toThrow(error);
     });
 
@@ -232,19 +232,19 @@ describe('AnalyticsController', () => {
       analyticsService.getEventStats.mockRejectedValue(error);
 
       await expect(
-        controller.getEventStats('event-uuid-123', 'different-user-id', UserRole.ORGANIZADOR),
+        controller.getEventStats('event-uuid-123', 'different-user-id', UserRole.ORGANIZER),
       ).rejects.toThrow(error);
     });
 
     it('should pass different event IDs correctly', async () => {
       analyticsService.getEventStats.mockResolvedValue(mockEventStats as any);
 
-      await controller.getEventStats('event-uuid-789', 'organizer-uuid-123', UserRole.ORGANIZADOR);
+      await controller.getEventStats('event-uuid-789', 'organizer-uuid-123', UserRole.ORGANIZER);
 
       expect(analyticsService.getEventStats).toHaveBeenCalledWith(
         'event-uuid-789',
         'organizer-uuid-123',
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
     });
   });

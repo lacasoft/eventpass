@@ -6,7 +6,7 @@ export class AddCheckerRole1761825600000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Add 'checker' value to users_role_enum
     await queryRunner.query(`
-      ALTER TYPE "public"."users_role_enum" ADD VALUE 'checker' AFTER 'organizador'
+      ALTER TYPE "public"."users_role_enum" ADD VALUE 'checker' AFTER 'organizer'
     `);
   }
 
@@ -15,7 +15,7 @@ export class AddCheckerRole1761825600000 implements MigrationInterface {
     // We need to recreate the enum without the 'checker' value
     await queryRunner.query(`
       -- Create temporary enum without 'checker'
-      CREATE TYPE "public"."users_role_enum_old" AS ENUM('cliente', 'organizador', 'admin', 'super-admin');
+      CREATE TYPE "public"."users_role_enum_old" AS ENUM('customer', 'organizer', 'admin', 'super-admin');
     `);
 
     await queryRunner.query(`

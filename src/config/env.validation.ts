@@ -224,6 +224,14 @@ export class EnvironmentVariables {
   @IsOptional()
   EMAIL_FROM_ADDRESS?: string;
 
+  @IsString()
+  @IsOptional()
+  EMAIL_APP_NAME?: string;
+
+  @IsEmail()
+  @IsOptional()
+  EMAIL_SUPPORT_EMAIL?: string;
+
   // Frontend URL
   @IsUrl({ require_tld: false })
   FRONTEND_URL: string;

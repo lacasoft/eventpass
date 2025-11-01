@@ -30,7 +30,7 @@ export class UsersService {
     }
 
     // Validar que solo admin y super-admin pueden asignar roles diferentes a CLIENTE
-    if (createUserDto.role && createUserDto.role !== UserRole.CLIENTE) {
+    if (createUserDto.role && createUserDto.role !== UserRole.CUSTOMER) {
       if (
         !currentUserRole ||
         (currentUserRole !== UserRole.ADMIN && currentUserRole !== UserRole.SUPER_ADMIN)
@@ -56,7 +56,7 @@ export class UsersService {
     const user = this.userRepository.create({
       ...createUserDto,
       password: hashedPassword,
-      role: createUserDto.role || UserRole.CLIENTE,
+      role: createUserDto.role || UserRole.CUSTOMER,
     });
 
     return this.userRepository.save(user);
@@ -85,7 +85,7 @@ export class UsersService {
     // Construir condiciones de búsqueda
     const where: any = {};
 
-    // Filtro por rol
+    // Filtro por rol (el Transform en el DTO ya lo convirtió al enum)
     if (role) {
       where.role = role;
     }
@@ -365,8 +365,11 @@ export class UsersService {
     // Hashear la nueva contraseña
     const hashedPassword = await PasswordUtil.hashPassword(newPassword);
 
-    // Actualizar la contraseña
-    await this.userRepository.update(userId, { password: hashedPassword });
+    // Actualizar la contraseña y marcar que ya no necesita cambiar contraseña
+    await this.userRepository.update(userId, {
+      password: hashedPassword,
+      mustChangePassword: false,
+    });
   }
 
   /**
@@ -397,7 +400,7 @@ export class UsersService {
     const temporaryPassword = PasswordUtil.generateTemporaryPassword();
     const hashedPassword = await PasswordUtil.hashPassword(temporaryPassword);
 
-    // Crear el usuario
+    // Crear el usuario (el Transform en el DTO ya convirtió el rol al enum)
     const user = this.userRepository.create({
       email: createUserByAdminDto.email,
       firstName: createUserByAdminDto.firstName,

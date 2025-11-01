@@ -30,7 +30,7 @@ export class UsersController {
         firstName: 'John',
         lastName: 'Doe',
         phone: '+1234567890',
-        role: 'cliente',
+        role: 'customer',
         isActive: true,
         mustChangePassword: false,
         createdAt: '2025-01-15T10:30:00Z',
@@ -61,7 +61,7 @@ export class UsersController {
         firstName: 'John',
         lastName: 'Smith',
         phone: '+1234567890',
-        role: 'cliente',
+        role: 'customer',
         isActive: true,
         mustChangePassword: false,
         createdAt: '2025-01-15T10:30:00Z',
@@ -122,7 +122,7 @@ export class UsersController {
     },
   })
   async changePassword(
-    @CurrentUser('sub') userId: string,
+    @CurrentUser('userId') userId: string,
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
     await this.usersService.changePassword(

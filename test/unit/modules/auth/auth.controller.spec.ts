@@ -21,7 +21,7 @@ describe('AuthController', () => {
       email: 'test@example.com',
       firstName: 'John',
       lastName: 'Doe',
-      role: UserRole.CLIENTE,
+      role: UserRole.CUSTOMER,
       mustChangePassword: false,
     },
     token: 'access-token-123',
@@ -147,7 +147,7 @@ describe('AuthController', () => {
 
   describe('refresh', () => {
     const refreshTokenDto: RefreshTokenDto = {
-      refresh_token: 'valid-refresh-token',
+      refreshToken: 'valid-refresh-token',
     };
 
     const mockRequest = {

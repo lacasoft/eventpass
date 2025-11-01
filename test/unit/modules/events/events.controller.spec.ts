@@ -248,14 +248,14 @@ describe('EventsController', () => {
         'event-uuid',
         updateEventDto,
         mockOrganizerId,
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
 
       expect(service.update).toHaveBeenCalledWith(
         'event-uuid',
         updateEventDto,
         mockOrganizerId,
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
       expect(result.title).toBe(updateEventDto.title);
       expect(result.ticketPrice).toBe(updateEventDto.ticketPrice);
@@ -268,7 +268,7 @@ describe('EventsController', () => {
         'event-uuid',
         updateEventDto,
         mockOrganizerId,
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
 
       expect(service.update).toHaveBeenCalled();
@@ -306,13 +306,13 @@ describe('EventsController', () => {
       const result = await controller.cancel(
         'event-uuid',
         mockOrganizerId,
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
 
       expect(service.cancel).toHaveBeenCalledWith(
         'event-uuid',
         mockOrganizerId,
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
       expect(result.isCancelled).toBe(true);
       expect(result.isActive).toBe(false);
@@ -324,7 +324,7 @@ describe('EventsController', () => {
       await controller.cancel(
         'event-uuid',
         mockOrganizerId,
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
 
       expect(service.cancel).toHaveBeenCalled();

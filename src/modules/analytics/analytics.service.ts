@@ -256,8 +256,8 @@ export class AnalyticsService {
       totalAdmins,
     ] = await Promise.all([
       this.userRepository.count(),
-      this.userRepository.count({ where: { role: UserRole.CLIENTE } }),
-      this.userRepository.count({ where: { role: UserRole.ORGANIZADOR } }),
+      this.userRepository.count({ where: { role: UserRole.CUSTOMER } }),
+      this.userRepository.count({ where: { role: UserRole.ORGANIZER } }),
       this.userRepository.count({ where: { role: UserRole.ADMIN } }),
     ]);
 

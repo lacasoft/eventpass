@@ -119,7 +119,7 @@ describe('JwtAuthGuard', () => {
       const complexUser = {
         id: 'user-uuid-123',
         email: 'complex@example.com',
-        role: 'organizador',
+        role: 'organizer',
         firstName: 'John',
         lastName: 'Doe',
         createdAt: new Date(),

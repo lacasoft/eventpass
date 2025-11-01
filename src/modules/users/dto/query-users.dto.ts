@@ -6,12 +6,14 @@ import { UserStatus } from '../enums/user-status.enum';
 
 export class QueryUsersDto extends PaginationDto {
   @ApiPropertyOptional({
-    enum: UserRole,
+    enum: ['organizer', 'checker', 'admin', 'super-admin'],
     description: 'Filtrar por rol de usuario',
-    example: UserRole.ORGANIZADOR,
+    example: 'organizer',
   })
   @IsOptional()
-  @IsEnum(UserRole, { message: 'Role debe ser un rol válido' })
+  @IsEnum(UserRole, {
+    message: 'Role debe ser un rol válido',
+  })
   role?: UserRole;
 
   @ApiPropertyOptional({

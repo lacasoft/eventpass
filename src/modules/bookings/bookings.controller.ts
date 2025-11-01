@@ -38,7 +38,7 @@ export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) {}
 
   @Post('reserve')
-  @Roles(UserRole.CLIENTE, UserRole.ORGANIZADOR, UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CUSTOMER, UserRole.ORGANIZER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Crear reserva temporal de boletos',
@@ -124,7 +124,7 @@ export class BookingsController {
   }
 
   @Get(':id')
-  @Roles(UserRole.CLIENTE, UserRole.ORGANIZADOR, UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CUSTOMER, UserRole.ORGANIZER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Obtener detalle de una reserva',
@@ -204,7 +204,7 @@ export class BookingsController {
   }
 
   @Get('my-bookings')
-  @Roles(UserRole.CLIENTE, UserRole.ORGANIZADOR, UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CUSTOMER, UserRole.ORGANIZER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Listar mis reservas',
@@ -265,7 +265,7 @@ export class BookingsController {
   }
 
   @Post(':id/confirm')
-  @Roles(UserRole.CLIENTE, UserRole.ORGANIZADOR, UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CUSTOMER, UserRole.ORGANIZER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Confirmar reserva después del pago',

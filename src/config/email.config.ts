@@ -9,6 +9,10 @@ export default registerAs('email', () => {
       name: process.env.EMAIL_FROM_NAME || 'EventPass',
       address: process.env.EMAIL_FROM_ADDRESS || 'noreply@eventpass.com',
     },
+    app: {
+      name: process.env.EMAIL_APP_NAME || 'EventPass',
+      supportEmail: process.env.EMAIL_SUPPORT_EMAIL || 'support@eventpass.com',
+    },
     smtp: {
       host: process.env.EMAIL_SMTP_HOST || 'smtp.gmail.com',
       port,

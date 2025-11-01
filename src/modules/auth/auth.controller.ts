@@ -18,6 +18,7 @@ import { RegisterDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { LogoutDto } from './dto/logout.dto';
 import { Public } from '../../common/decorators/public.decorator';
 import { RefreshJwtAuthGuard } from '../../common/guards/refresh-jwt-auth.guard';
 import { CACHE_KEYS } from '../../common/cache/cache.constants';
@@ -44,7 +45,7 @@ export class AuthController {
   @ApiOperation({
     summary: 'Register new user (customer role only)',
     description:
-      'Public endpoint for user self-registration. All registered users have "cliente" role by default.',
+      'Public endpoint for user self-registration. All registered users have "customer" role by default.',
   })
   @ApiResponse({
     status: 201,
@@ -56,7 +57,7 @@ export class AuthController {
           email: 'user@example.com',
           firstName: 'John',
           lastName: 'Doe',
-          role: 'cliente',
+          role: 'customer',
           mustChangePassword: false,
         },
         token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
@@ -119,7 +120,7 @@ export class AuthController {
           email: 'user@example.com',
           firstName: 'John',
           lastName: 'Doe',
-          role: 'cliente',
+          role: 'customer',
           mustChangePassword: false,
         },
         token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
@@ -180,7 +181,7 @@ export class AuthController {
           email: 'user@example.com',
           firstName: 'John',
           lastName: 'Doe',
-          role: 'cliente',
+          role: 'customer',
           mustChangePassword: false,
         },
         token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
@@ -306,6 +307,50 @@ export class AuthController {
   })
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Logout user',
+    description:
+      'Invalidates both access token and refresh token by adding them to a blacklist. Both tokens will be immediately invalidated.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Logout successful',
+    schema: {
+      example: {
+        success: true,
+        message: 'Logout exitoso. Tu sesión ha sido cerrada.',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid token',
+    schema: {
+      example: {
+        statusCode: 400,
+        message: 'Invalid token',
+        error: 'Bad Request',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - missing or invalid token',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Unauthorized',
+        error: 'Unauthorized',
+      },
+    },
+  })
+  async logout(@Body() logoutDto: LogoutDto) {
+    return this.authService.logout(logoutDto);
   }
 
   /**

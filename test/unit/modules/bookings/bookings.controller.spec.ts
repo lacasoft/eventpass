@@ -119,13 +119,13 @@ describe('BookingsController', () => {
     it('should return booking detail for owner', async () => {
       bookingsService.findOne.mockResolvedValue(mockBookingDetail as any);
 
-      const result = await controller.findOne('booking-uuid-123', 'user-uuid-123', UserRole.CLIENTE);
+      const result = await controller.findOne('booking-uuid-123', 'user-uuid-123', UserRole.CUSTOMER);
 
       expect(result).toEqual(mockBookingDetail);
       expect(bookingsService.findOne).toHaveBeenCalledWith(
         'booking-uuid-123',
         'user-uuid-123',
-        UserRole.CLIENTE,
+        UserRole.CUSTOMER,
       );
     });
 
@@ -146,7 +146,7 @@ describe('BookingsController', () => {
       bookingsService.findOne.mockRejectedValue(error);
 
       await expect(
-        controller.findOne('non-existent-id', 'user-uuid-123', UserRole.CLIENTE),
+        controller.findOne('non-existent-id', 'user-uuid-123', UserRole.CUSTOMER),
       ).rejects.toThrow(error);
     });
 
@@ -155,7 +155,7 @@ describe('BookingsController', () => {
       bookingsService.findOne.mockRejectedValue(error);
 
       await expect(
-        controller.findOne('booking-uuid-123', 'different-user-id', UserRole.CLIENTE),
+        controller.findOne('booking-uuid-123', 'different-user-id', UserRole.CUSTOMER),
       ).rejects.toThrow(error);
     });
   });

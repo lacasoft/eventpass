@@ -36,7 +36,7 @@ export class PaymentsController {
   @Post('create-intent')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.CLIENTE, UserRole.ORGANIZADOR, UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.CUSTOMER, UserRole.ORGANIZER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Crear Payment Intent en Stripe',

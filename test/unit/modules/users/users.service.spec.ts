@@ -27,7 +27,7 @@ describe('UsersService', () => {
     firstName: 'John',
     lastName: 'Doe',
     phone: '+56912345678',
-    role: UserRole.CLIENTE,
+    role: UserRole.CUSTOMER,
     isActive: true,
     mustChangePassword: false,
     createdAt: new Date('2025-01-15T10:00:00Z'),
@@ -96,7 +96,7 @@ describe('UsersService', () => {
       expect(userRepository.create).toHaveBeenCalledWith({
         ...createUserDto,
         password: 'hashed-password',
-        role: UserRole.CLIENTE,
+        role: UserRole.CUSTOMER,
       });
       expect(result.email).toBe(createUserDto.email);
     });
@@ -112,24 +112,24 @@ describe('UsersService', () => {
     });
 
     it('should allow admin to create ORGANIZADOR user', async () => {
-      const organizerDto = { ...createUserDto, role: UserRole.ORGANIZADOR };
+      const organizerDto = { ...createUserDto, role: UserRole.ORGANIZER };
       userRepository.findByEmail.mockResolvedValue(null);
       userRepository.create.mockReturnValue({ ...mockUser, ...organizerDto } as any);
       userRepository.save.mockResolvedValue({ ...mockUser, ...organizerDto } as any);
 
       const result = await service.create(organizerDto, UserRole.ADMIN);
 
-      expect(result.role).toBe(UserRole.ORGANIZADOR);
+      expect(result.role).toBe(UserRole.ORGANIZER);
     });
 
     it('should throw ForbiddenException if non-admin tries to create ORGANIZADOR', async () => {
-      const organizerDto = { ...createUserDto, role: UserRole.ORGANIZADOR };
+      const organizerDto = { ...createUserDto, role: UserRole.ORGANIZER };
       userRepository.findByEmail.mockResolvedValue(null);
 
-      await expect(service.create(organizerDto, UserRole.CLIENTE)).rejects.toThrow(
+      await expect(service.create(organizerDto, UserRole.CUSTOMER)).rejects.toThrow(
         ForbiddenException,
       );
-      await expect(service.create(organizerDto, UserRole.CLIENTE)).rejects.toThrow(
+      await expect(service.create(organizerDto, UserRole.CUSTOMER)).rejects.toThrow(
         'Only administrators can create users with roles other than CLIENTE',
       );
     });
@@ -187,13 +187,13 @@ describe('UsersService', () => {
     });
 
     it('should filter by role', async () => {
-      const queryDto: QueryUsersDto = { role: UserRole.ORGANIZADOR, page: 1, limit: 50 };
-      const organizer = { ...mockUser, role: UserRole.ORGANIZADOR };
+      const queryDto: QueryUsersDto = { role: UserRole.ORGANIZER, page: 1, limit: 50 };
+      const organizer = { ...mockUser, role: UserRole.ORGANIZER };
       userRepository.findAndCount.mockResolvedValue([[organizer], 1] as any);
 
       const result = await service.findAllWithFilters(queryDto);
 
-      expect(result.data[0].role).toBe(UserRole.ORGANIZADOR);
+      expect(result.data[0].role).toBe(UserRole.ORGANIZER);
     });
 
     it('should filter by active status', async () => {
@@ -295,17 +295,17 @@ describe('UsersService', () => {
     });
 
     it('should throw ForbiddenException when non-admin tries to change role', async () => {
-      const updateWithRole = { role: UserRole.ORGANIZADOR };
+      const updateWithRole = { role: UserRole.ORGANIZER };
       userRepository.findOne.mockResolvedValue(mockUser as any);
 
-      await expect(service.update(mockUser.id, updateWithRole, UserRole.CLIENTE)).rejects.toThrow(
+      await expect(service.update(mockUser.id, updateWithRole, UserRole.CUSTOMER)).rejects.toThrow(
         ForbiddenException,
       );
     });
 
     it('should only allow super_admin to modify admin roles', async () => {
       const adminUser = { ...mockUser, role: UserRole.ADMIN };
-      const updateDto = { role: UserRole.ORGANIZADOR }; // Intentando cambiar el rol
+      const updateDto = { role: UserRole.ORGANIZER }; // Intentando cambiar el rol
       userRepository.findOne.mockResolvedValue(adminUser as any);
 
       await expect(service.update(adminUser.id, updateDto, UserRole.ADMIN)).rejects.toThrow(
@@ -355,7 +355,7 @@ describe('UsersService', () => {
     it('should throw ForbiddenException when non-admin tries to delete', async () => {
       userRepository.findOne.mockResolvedValue(mockUser as any);
 
-      await expect(service.remove(mockUser.id, UserRole.CLIENTE)).rejects.toThrow(
+      await expect(service.remove(mockUser.id, UserRole.CUSTOMER)).rejects.toThrow(
         ForbiddenException,
       );
     });
@@ -388,7 +388,7 @@ describe('UsersService', () => {
     });
 
     it('should throw ForbiddenException when non-admin tries to restore', async () => {
-      await expect(service.restore(mockUser.id, UserRole.CLIENTE)).rejects.toThrow(
+      await expect(service.restore(mockUser.id, UserRole.CUSTOMER)).rejects.toThrow(
         ForbiddenException,
       );
     });
@@ -415,13 +415,13 @@ describe('UsersService', () => {
 
   describe('findByRole', () => {
     it('should return users with specific role', async () => {
-      const organizers = [{ ...mockUser, role: UserRole.ORGANIZADOR }];
+      const organizers = [{ ...mockUser, role: UserRole.ORGANIZER }];
       userRepository.find.mockResolvedValue(organizers as any);
 
-      const result = await service.findByRole(UserRole.ORGANIZADOR);
+      const result = await service.findByRole(UserRole.ORGANIZER);
 
       expect(result).toEqual(organizers);
-      expect(userRepository.find).toHaveBeenCalledWith({ where: { role: UserRole.ORGANIZADOR } });
+      expect(userRepository.find).toHaveBeenCalledWith({ where: { role: UserRole.ORGANIZER } });
     });
   });
 
@@ -556,7 +556,7 @@ describe('UsersService', () => {
       firstName: 'New',
       lastName: 'Organizer',
       phone: '+56911111111',
-      role: UserRole.ORGANIZADOR,
+      role: UserRole.ORGANIZER,
     };
 
     it('should create user with temporary password', async () => {

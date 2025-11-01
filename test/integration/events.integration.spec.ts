@@ -283,7 +283,7 @@ describe('Events Integration Tests', () => {
         eventId,
         updateDto,
         organizerId,
-        'organizador' as any,
+        'organizer' as any,
       );
 
       expect(result.title).toBe(updateDto.title);
@@ -294,7 +294,7 @@ describe('Events Integration Tests', () => {
       const result = await eventsService.cancel(
         eventId,
         organizerId,
-        'organizador' as any,
+        'organizer' as any,
       );
 
       expect(result.isCancelled).toBe(true);
@@ -307,7 +307,7 @@ describe('Events Integration Tests', () => {
       };
 
       await expect(
-        eventsService.update(eventId, updateDto, organizerId, 'organizador' as any),
+        eventsService.update(eventId, updateDto, organizerId, 'organizer' as any),
       ).rejects.toThrow(/cancelado/);
     });
   });

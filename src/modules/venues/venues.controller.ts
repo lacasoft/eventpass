@@ -35,7 +35,7 @@ export class VenuesController {
   constructor(private readonly venuesService: VenuesService) {}
 
   @Post()
-  @Roles(UserRole.ORGANIZADOR, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.ORGANIZER, UserRole.SUPER_ADMIN)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Crear un nuevo recinto' })
   @ApiBody({ type: CreateVenueDto })
@@ -78,7 +78,7 @@ export class VenuesController {
       example: {
         statusCode: 403,
         message:
-          "User role 'cliente' does not have permission to access this resource. Required roles: organizer, super_admin",
+          "User role 'customer' does not have permission to access this resource. Required roles: organizer, super_admin",
         error: 'Forbidden',
       },
     },
@@ -88,7 +88,7 @@ export class VenuesController {
   }
 
   @Get()
-  @Roles(UserRole.ORGANIZADOR, UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.ORGANIZER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Listar todos los recintos con paginación y filtros' })
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
@@ -133,7 +133,7 @@ export class VenuesController {
       example: {
         statusCode: 403,
         message:
-          "User role 'cliente' does not have permission to access this resource. Required roles: organizer, admin, super_admin",
+          "User role 'customer' does not have permission to access this resource. Required roles: organizer, admin, super_admin",
         error: 'Forbidden',
       },
     },
@@ -143,7 +143,7 @@ export class VenuesController {
   }
 
   @Get(':id')
-  @Roles(UserRole.ORGANIZADOR, UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.ORGANIZER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener detalle de un recinto por ID' })
   @ApiResponse({
@@ -181,7 +181,7 @@ export class VenuesController {
       example: {
         statusCode: 403,
         message:
-          "User role 'cliente' does not have permission to access this resource. Required roles: organizer, admin, super_admin",
+          "User role 'customer' does not have permission to access this resource. Required roles: organizer, admin, super_admin",
         error: 'Forbidden',
       },
     },

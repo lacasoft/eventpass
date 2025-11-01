@@ -28,7 +28,7 @@ describe('AdminUsersController', () => {
     firstName: 'Juan',
     lastName: 'Pérez',
     phone: '+56912345678',
-    role: UserRole.ORGANIZADOR,
+    role: UserRole.ORGANIZER,
     password: 'hashed_password',
     mustChangePassword: true,
     isActive: true,
@@ -66,7 +66,7 @@ describe('AdminUsersController', () => {
       firstName: 'Juan',
       lastName: 'Pérez',
       phone: '+56912345678',
-      role: UserRole.ORGANIZADOR,
+      role: UserRole.ORGANIZER,
     };
 
     it('should create organizer user successfully', async () => {
@@ -81,7 +81,7 @@ describe('AdminUsersController', () => {
       expect(usersService.createUserByAdmin).toHaveBeenCalledWith(createDto, UserRole.SUPER_ADMIN);
       expect(result.user).toHaveProperty('temporaryPassword', temporaryPassword);
       expect(result.user).toHaveProperty('email', 'organizer@example.com');
-      expect(result.user).toHaveProperty('role', UserRole.ORGANIZADOR);
+      expect(result.user).toHaveProperty('role', UserRole.ORGANIZER);
       expect(result.user).toHaveProperty('mustChangePassword', true);
       expect(result.user).not.toHaveProperty('password');
     });
@@ -210,7 +210,7 @@ describe('AdminUsersController', () => {
         firstName: 'Juan',
         lastName: 'Pérez',
         phone: '+56912345678',
-        role: UserRole.ORGANIZADOR,
+        role: UserRole.ORGANIZER,
         password: 'hashed_password',
         isActive: true,
         mustChangePassword: false,
@@ -289,7 +289,7 @@ describe('AdminUsersController', () => {
       const queryDto: QueryUsersDto = {
         page: 1,
         limit: 50,
-        role: UserRole.ORGANIZADOR,
+        role: UserRole.ORGANIZER,
       };
 
       const filteredUsers = [mockUser];
@@ -310,7 +310,7 @@ describe('AdminUsersController', () => {
 
       expect(usersService.findAllWithFilters).toHaveBeenCalledWith(queryDto);
       expect(result.data).toHaveLength(1);
-      expect(result.data[0].role).toBe(UserRole.ORGANIZADOR);
+      expect(result.data[0].role).toBe(UserRole.ORGANIZER);
     });
 
     it('should filter by status', async () => {
@@ -422,7 +422,7 @@ describe('AdminUsersController', () => {
       const queryDto: QueryUsersDto = {
         page: 1,
         limit: 50,
-        role: UserRole.ORGANIZADOR,
+        role: UserRole.ORGANIZER,
         status: UserStatus.ACTIVE,
         search: 'juan',
       };

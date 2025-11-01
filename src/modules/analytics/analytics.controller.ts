@@ -18,7 +18,7 @@ export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
   @Get('organizer/dashboard')
-  @Roles(UserRole.ORGANIZADOR, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.ORGANIZER, UserRole.SUPER_ADMIN)
   @ApiOperation({
     summary: 'Dashboard del organizador',
     description:
@@ -43,7 +43,7 @@ export class AnalyticsController {
   }
 
   @Get('events/:id/stats')
-  @Roles(UserRole.ORGANIZADOR, UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.ORGANIZER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({
     summary: 'Estadísticas de un evento específico',
     description:

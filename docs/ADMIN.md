@@ -26,7 +26,7 @@ Lista todos los usuarios del sistema con soporte para paginación, filtrado y b�
 |-----------|------|-----------|---------|-------------|
 | page | number | No | 1 | Número de página |
 | limit | number | No | 50 | Cantidad de resultados por página |
-| role | string | No | - | Filtrar por rol: `cliente`, `organizer`, `admin`, `super_admin` |
+| role | string | No | - | Filtrar por rol: `customer`, `organizer`, `checker`, `admin`, `super_admin` |
 | status | string | No | - | Filtrar por estado: `active`, `inactive`, `suspended` |
 | search | string | No | - | Búsqueda por email, firstName o lastName |
 | sortBy | string | No | createdAt | Campo para ordenar |
@@ -98,15 +98,17 @@ curl -X GET "http://localhost:3000/api/v1/admin/users?search=juan&page=2&limit=2
 
 ---
 
-### 2. Crear Usuario (Organizador o Admin)
+### 2. Crear Usuario (Organizer, Checker o Admin)
 
-Permite a un `super_admin` crear nuevos usuarios con roles de `organizer` o `admin`. Se genera una contraseña temporal que debe ser cambiada en el primer inicio de sesión.
+Permite a un `super_admin` crear nuevos usuarios con roles de `organizer`, `checker` o `admin`. Los usuarios `admin` también pueden crear usuarios con rol `checker`. Se genera una contraseña temporal que debe ser cambiada en el primer inicio de sesión.
 
 **Endpoint:** `POST /admin/users`
 
 **Autenticación:** JWT requerido (Bearer token)
 
-**Autorización:** Solo `super_admin`
+**Autorización:**
+- `super_admin`: Puede crear usuarios con roles `organizer`, `checker` o `admin`
+- `admin`: Solo puede crear usuarios con rol `checker`
 
 **Request Body:**
 ```json
@@ -115,7 +117,7 @@ Permite a un `super_admin` crear nuevos usuarios con roles de `organizer` o `adm
   "firstName": "Carlos",
   "lastName": "Rodríguez",
   "phone": "+56912345678",
-  "role": "organizer"
+  "role": "organizador"
 }
 ```
 
@@ -124,7 +126,8 @@ Permite a un `super_admin` crear nuevos usuarios con roles de `organizer` o `adm
 - `firstName`: Requerido, mínimo 2 caracteres
 - `lastName`: Requerido, mínimo 2 caracteres
 - `phone`: Formato internacional (+[código país][número])
-- `role`: Solo `organizer` o `admin` (no se puede crear `super_admin`)
+- `role`: Solo `organizer`, `checker` o `admin` (no se puede crear `super_admin`)
+- Si eres `admin`, solo puedes crear usuarios con rol `checker`
 
 **cURL:**
 ```bash
@@ -170,11 +173,11 @@ curl -X POST http://localhost:3000/api/v1/admin/users \
 }
 ```
 
-**Response 403 (Forbidden - No es super_admin):**
+**Response 403 (Forbidden - Admin intenta crear rol no permitido):**
 ```json
 {
   "statusCode": 403,
-  "message": "User role 'admin' does not have permission to access this resource. Required roles: super_admin",
+  "message": "Admin users can only create checker users",
   "error": "Forbidden"
 }
 ```
@@ -274,7 +277,7 @@ Actualiza la información de un usuario. Solo `super_admin` puede actualizar otr
 **Reglas:**
 - Solo `super_admin` puede cambiar el rol de un usuario
 - Solo `super_admin` puede actualizar usuarios con rol `admin` o `super_admin`
-- Los `admin` solo pueden actualizar usuarios con rol `cliente` u `organizer`
+- Los `admin` solo pueden actualizar usuarios con rol `customer`, `organizer` o `checker`
 
 **cURL:**
 ```bash
@@ -338,7 +341,7 @@ Elimina un usuario mediante soft delete. El usuario queda marcado como eliminado
 
 **Reglas:**
 - Solo `super_admin` puede eliminar usuarios con rol `admin` o `super_admin`
-- Los `admin` solo pueden eliminar usuarios con rol `cliente` u `organizer`
+- Los `admin` solo pueden eliminar usuarios con rol `customer`, `organizer` o `checker`
 
 **cURL:**
 ```bash
@@ -558,26 +561,68 @@ curl -X PATCH http://localhost:3000/api/v1/admin/users/550e8400-e29b-41d4-a716-4
 
 ---
 
-## Jerarquía de Permisos
+## Roles de Usuario
 
 ### Super Admin
+- **Rol más alto del sistema**
 - Puede realizar **todas las operaciones** sobre cualquier usuario
 - Único rol que puede:
-  - Crear usuarios con rol `organizer` o `admin`
+  - Crear usuarios con rol `organizer`, `checker` o `admin`
   - Modificar, activar, desactivar o eliminar usuarios `admin`
   - Cambiar roles de usuarios
+- **Creación**: Solo puede ser creado directamente en la base de datos por seguridad
 
 ### Admin
-- Puede gestionar usuarios con rol `cliente` y `organizer`
+- **Rol administrativo intermedio**
+- Puede gestionar usuarios con rol `customer`, `organizer` y `checker`
+- Puede crear usuarios con rol `checker`
 - **No puede:**
-  - Crear nuevos usuarios (POST)
+  - Crear usuarios con rol `organizer` o `admin`
   - Modificar usuarios con rol `admin` o `super_admin`
   - Cambiar roles de usuarios
   - Eliminar, activar o desactivar usuarios `admin`
 
-### Organizer y Cliente
+### Organizer
+- **Rol de organizador de eventos**
+- Responsable de crear y gestionar eventos
+- Puede crear eventos, gestionar venues y ver reportes de sus eventos
+- Acceso a panel de organizador
+- No tiene acceso a funcionalidades administrativas del sistema
+
+### Checker
+- **Rol de verificador de tickets**
+- Personal de entrada en eventos que valida tickets
+- Puede escanear y validar tickets QR en los eventos
+- Asignado a eventos específicos por organizadores
+- Acceso limitado solo a funcionalidad de escaneo de tickets
+- Ver documentación completa en `/docs/CHECKER.md`
+
+### Customer
+- **Rol de cliente/comprador**
+- Usuario final que compra tickets para eventos
+- Puede buscar eventos, comprar tickets y ver su historial
+- Acceso básico solo a funcionalidades públicas
+
+### Organizer, Checker y Customer
 - No tienen acceso a ningún endpoint de administración
 - Solo pueden gestionar su propio perfil mediante `/users/me`
+
+---
+
+## Jerarquía de Permisos
+
+```
+super_admin
+    ↓ (puede gestionar)
+admin
+    ↓ (puede gestionar)
+organizer / checker / customer
+```
+
+**Reglas importantes:**
+- Un rol solo puede gestionar roles inferiores en la jerarquía
+- Solo `super_admin` puede cambiar roles
+- Los usuarios `checker` son creados por `admin` o `super_admin` y asignados a eventos por `organizer`
 
 ---
 

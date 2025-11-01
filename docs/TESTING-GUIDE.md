@@ -75,7 +75,7 @@ curl http://localhost:3000/health
 ### 1.2. Ejecutar Seeders (Primera vez)
 
 ```bash
-npm run seed:all
+npm run seed:admin
 ```
 
 **Validar**:
@@ -126,19 +126,49 @@ curl -X POST http://localhost:3000/admin/users \
   -H "Content-Type: application/json" \
   -d '{
     "email": "admin@eventpass.com",
-    "password": "Admin123!@#",
     "firstName": "Admin",
     "lastName": "User",
-    "role": "ADMIN"
+    "phone": "+56912345678",
+    "role": "admin"
   }'
 ```
 
 **Validar**:
 - ✅ Status 201
-- ✅ Usuario creado con rol `ADMIN`
-- ✅ Email de bienvenida enviado (verificar logs)
+- ✅ Usuario creado con rol `admin`
+- ✅ Contraseña temporal generada automáticamente y retornada en la respuesta (campo `temporaryPassword`)
+- ✅ `mustChangePassword: true`
 
-### 2.3. Crear Usuario Checker
+**IMPORTANTE**: Guardar la `temporaryPassword` de la respuesta para el primer login
+
+**Guardar**: `ADMIN_TEMP_PASSWORD`
+
+### 2.3. Crear Usuario Organizador
+
+**Endpoint**: `POST /admin/users`
+
+```bash
+curl -X POST http://localhost:3000/admin/users \
+  -H "Authorization: Bearer $SUPER_ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "organizer@eventpass.com",
+    "firstName": "Event",
+    "lastName": "Organizer",
+    "phone": "+56987654321",
+    "role": "organizador"
+  }'
+```
+
+**Validar**:
+- ✅ Status 201
+- ✅ Usuario creado con rol `organizer`
+- ✅ Contraseña temporal generada automáticamente
+- ✅ `mustChangePassword: true`
+
+**Guardar**: `ORGANIZER_ID` y `ORGANIZER_TEMP_PASSWORD` de la respuesta
+
+### 2.4. Crear Usuario Checker
 
 **Endpoint**: `POST /admin/users`
 
@@ -148,20 +178,22 @@ curl -X POST http://localhost:3000/admin/users \
   -H "Content-Type: application/json" \
   -d '{
     "email": "checker@eventpass.com",
-    "password": "Checker123!@#",
-    "firstName": "Checker",
-    "lastName": "User",
-    "role": "CHECKER"
+    "firstName": "Ticket",
+    "lastName": "Checker",
+    "phone": "+56911223344",
+    "role": "checker"
   }'
 ```
 
 **Validar**:
 - ✅ Status 201
-- ✅ Usuario creado con rol `CHECKER`
+- ✅ Usuario creado con rol `checker`
+- ✅ Contraseña temporal generada automáticamente
+- ✅ `mustChangePassword: true`
 
-**Guardar**: ID del checker para asignaciones posteriores
+**Guardar**: `CHECKER_ID` y `CHECKER_TEMP_PASSWORD` de la respuesta
 
-### 2.4. Crear Usuario Customer
+### 2.5. Crear Usuario Customer
 
 **Endpoint**: `POST /auth/register`
 
@@ -183,33 +215,88 @@ curl -X POST http://localhost:3000/auth/register \
 
 **Guardar**: `CUSTOMER_TOKEN`
 
-### 2.5. Login como Admin
+### 2.6. Login como Admin (Primera vez con contraseña temporal)
 
 ```bash
 curl -X POST http://localhost:3000/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "admin@eventpass.com",
-    "password": "Admin123!@#"
+    "password": "<ADMIN_TEMP_PASSWORD>"
   }'
 ```
 
+**Validar**:
+- ✅ Status 200
+- ✅ Recibir `accessToken` y `refreshToken`
+- ✅ Usuario tiene `mustChangePassword: true`
+
 **Guardar**: `ADMIN_TOKEN`
 
-### 2.6. Login como Checker
+**IMPORTANTE**: El admin debe cambiar su contraseña en el primer login usando `PATCH /users/me/password`
+
+### 2.7. Login como Organizador (Primera vez con contraseña temporal)
+
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "organizer@eventpass.com",
+    "password": "<ORGANIZER_TEMP_PASSWORD>"
+  }'
+```
+
+**Validar**:
+- ✅ Status 200
+- ✅ Usuario tiene rol `organizer`
+- ✅ Recibir `accessToken` y `refreshToken`
+- ✅ `mustChangePassword: true`
+
+**Guardar**: `ORGANIZER_TOKEN`
+
+**IMPORTANTE**: Cambiar contraseña temporal antes de continuar
+
+### 2.8. Login como Checker (Primera vez con contraseña temporal)
 
 ```bash
 curl -X POST http://localhost:3000/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "checker@eventpass.com",
-    "password": "Checker123!@#"
+    "password": "<CHECKER_TEMP_PASSWORD>"
   }'
 ```
 
+**Validar**:
+- ✅ Status 200
+- ✅ Usuario tiene rol `checker`
+- ✅ Recibir `accessToken` y `refreshToken`
+- ✅ `mustChangePassword: true`
+
 **Guardar**: `CHECKER_TOKEN`
 
-### 2.7. Refresh Token
+### 2.8a. Cambiar Contraseña Temporal
+
+**Endpoint**: `PATCH /users/me/password`
+
+```bash
+curl -X PATCH http://localhost:3000/users/me/password \
+  -H "Authorization: Bearer $CHECKER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "currentPassword": "<CHECKER_TEMP_PASSWORD>",
+    "newPassword": "Checker123!@#"
+  }'
+```
+
+**Validar**:
+- ✅ Status 200
+- ✅ Contraseña actualizada
+- ✅ `mustChangePassword` ahora es `false`
+
+**Nota**: Repetir este proceso para admin y organizer si es necesario
+
+### 2.9. Refresh Token
 
 **Endpoint**: `POST /auth/refresh`
 
@@ -225,7 +312,137 @@ curl -X POST http://localhost:3000/auth/refresh \
 - ✅ Status 200
 - ✅ Nuevo `accessToken` generado
 
-### 2.8. Forgot Password
+### 2.10. Logout
+
+**Endpoint**: `POST /auth/logout`
+
+```bash
+curl -X POST http://localhost:3000/auth/logout \
+  -H "Authorization: Bearer $CUSTOMER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "refreshToken": "<REFRESH_TOKEN_FROM_LOGIN>"
+  }'
+```
+
+**Validar**:
+- ✅ Status 200
+- ✅ Mensaje: "Logout exitoso. Tu sesión ha sido cerrada."
+- ✅ Refresh token agregado a blacklist
+
+### 2.11. Intentar Refresh con Token Invalidado
+
+```bash
+# Intentar usar el refresh token después del logout
+curl -X POST http://localhost:3000/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{
+    "refreshToken": "<REFRESH_TOKEN_USADO_EN_LOGOUT>"
+  }'
+```
+
+**Validar**:
+- ✅ Status 401 Unauthorized
+- ✅ Mensaje: "Token has been invalidated. Please login again."
+
+### 2.12. Invalidación Global de Tokens (Solo SUPER_ADMIN)
+
+**Endpoint**: `POST /admin/auth/invalidate-all-tokens`
+
+**Propósito**: Esta funcionalidad permite al SUPER_ADMIN invalidar TODOS los tokens activos en el sistema de forma inmediata. Se usa en situaciones de emergencia o actualizaciones de seguridad críticas.
+
+```bash
+# Primero, hacer login con varios usuarios y guardar sus tokens
+# Luego, como SUPER_ADMIN, invalidar todos los tokens
+
+curl -X POST http://localhost:3000/admin/auth/invalidate-all-tokens \
+  -H "Authorization: Bearer $SUPER_ADMIN_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+**Validar**:
+- ✅ Status 200
+- ✅ Mensaje: "Todos los tokens han sido invalidados. Los usuarios deberán iniciar sesión nuevamente."
+
+**Ahora validar que todos los tokens anteriores están invalidados**:
+
+```bash
+# Intentar usar un access token que fue generado ANTES de la invalidación global
+curl http://localhost:3000/bookings/my-bookings \
+  -H "Authorization: Bearer $CUSTOMER_TOKEN_ANTERIOR"
+```
+
+**Validar**:
+- ✅ Status 401 Unauthorized
+- ✅ Mensaje: "Tu sesión ha sido invalidada por motivos de seguridad. Por favor, inicia sesión nuevamente."
+
+```bash
+# Intentar refresh con un token anterior
+curl -X POST http://localhost:3000/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{
+    "refreshToken": "<REFRESH_TOKEN_ANTERIOR>"
+  }'
+```
+
+**Validar**:
+- ✅ Status 401 Unauthorized
+- ✅ Token anterior no funciona
+
+**Validar que el SUPER_ADMIN también debe volver a hacer login**:
+
+```bash
+# El token del SUPER_ADMIN también debe estar invalidado
+curl http://localhost:3000/admin/users \
+  -H "Authorization: Bearer $SUPER_ADMIN_TOKEN_ANTERIOR"
+```
+
+**Validar**:
+- ✅ Status 401 Unauthorized
+- ✅ Incluso el SUPER_ADMIN debe hacer login nuevamente
+
+**Hacer login nuevamente con cualquier usuario**:
+
+```bash
+# Después de la invalidación global, los usuarios pueden volver a hacer login
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "customer@eventpass.com",
+    "password": "Customer123!@#"
+  }'
+```
+
+**Validar**:
+- ✅ Status 200
+- ✅ Nuevos tokens generados
+- ✅ Nuevos tokens funcionan correctamente
+
+**Validar permisos - Solo SUPER_ADMIN puede invalidar todos los tokens**:
+
+```bash
+# Intentar como ADMIN (debe fallar)
+curl -X POST http://localhost:3000/admin/auth/invalidate-all-tokens \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+**Validar**:
+- ✅ Status 403 Forbidden
+- ✅ Mensaje: "User role 'admin' does not have permission to access this resource. Required roles: super-admin"
+
+```bash
+# Intentar como CUSTOMER (debe fallar)
+curl -X POST http://localhost:3000/admin/auth/invalidate-all-tokens \
+  -H "Authorization: Bearer $CUSTOMER_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+**Validar**:
+- ✅ Status 403 Forbidden
+- ✅ Solo SUPER_ADMIN puede ejecutar esta operación
+
+### 2.13. Forgot Password
 
 **Endpoint**: `POST /auth/forgot-password`
 
@@ -242,7 +459,7 @@ curl -X POST http://localhost:3000/auth/forgot-password \
 - ✅ Email con token enviado (verificar logs)
 - ✅ Rate limit: máximo 3 intentos/minuto
 
-### 2.9. Rate Limiting - Login
+### 2.14. Rate Limiting - Login
 
 ```bash
 # Intentar 6 logins rápidos con credenciales incorrectas
@@ -931,7 +1148,13 @@ tail -f logs/app.log | grep "Email sent successfully"
 
 ## Validación de Seguridad
 
-### 10.1. Protección de Rutas - Sin Token
+### 10.1. Invalidación Global de Tokens
+
+**Ver sección [2.12. Invalidación Global de Tokens](#212-invalidación-global-de-tokens-solo-super_admin)** para pruebas detalladas de esta funcionalidad crítica de seguridad.
+
+**Resumen**: El SUPER_ADMIN puede invalidar todos los tokens activos del sistema en casos de emergencia o actualizaciones de seguridad.
+
+### 10.2. Protección de Rutas - Sin Token
 
 ```bash
 # Intentar acceder a ruta protegida sin token
@@ -941,7 +1164,7 @@ curl http://localhost:3000/bookings/my-bookings
 **Validar**:
 - ✅ Status 401 Unauthorized
 
-### 10.2. Protección de Rutas - Token Inválido
+### 10.3. Protección de Rutas - Token Inválido
 
 ```bash
 curl http://localhost:3000/bookings/my-bookings \
@@ -951,7 +1174,7 @@ curl http://localhost:3000/bookings/my-bookings \
 **Validar**:
 - ✅ Status 401 Unauthorized
 
-### 10.3. Protección de Rutas - Rol Insuficiente
+### 10.4. Protección de Rutas - Rol Insuficiente
 
 ```bash
 # Customer intentando acceder a ruta de Admin
@@ -962,7 +1185,7 @@ curl http://localhost:3000/admin/users \
 **Validar**:
 - ✅ Status 403 Forbidden
 
-### 10.4. Validación de CORS
+### 10.5. Validación de CORS
 
 ```bash
 curl -H "Origin: http://evil-site.com" \
@@ -974,7 +1197,7 @@ curl -H "Origin: http://evil-site.com" \
 **Validar**:
 - ✅ Solo dominios permitidos en `ALLOWED_ORIGINS`
 
-### 10.5. SQL Injection Protection
+### 10.6. SQL Injection Protection
 
 ```bash
 # Intentar inyección SQL en búsqueda
@@ -986,7 +1209,7 @@ curl "http://localhost:3000/events?search='; DROP TABLE users;--"
 - ✅ Query sanitizado
 - ✅ Base de datos intacta
 
-### 10.6. Rate Limiting Global
+### 10.7. Rate Limiting Global
 
 ```bash
 # Hacer 101+ requests rápidos
@@ -998,7 +1221,7 @@ done
 **Validar**:
 - ✅ Request 101+: 429 Too Many Requests
 
-### 10.7. Password Hashing
+### 10.8. Password Hashing
 
 **Verificar en base de datos**:
 

@@ -331,7 +331,7 @@ describe('EventsService', () => {
         'event-uuid',
         updateEventDto,
         mockOrganizerId,
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
 
       expect(result.title).toBe(updateEventDto.title);
@@ -346,7 +346,7 @@ describe('EventsService', () => {
           'event-uuid',
           updateEventDto,
           'different-user-id',
-          UserRole.ORGANIZADOR,
+          UserRole.ORGANIZER,
         ),
       ).rejects.toThrow(ForbiddenException);
     });
@@ -381,7 +381,7 @@ describe('EventsService', () => {
           'event-uuid',
           updateEventDto,
           mockOrganizerId,
-          UserRole.ORGANIZADOR,
+          UserRole.ORGANIZER,
         ),
       ).rejects.toThrow(BadRequestException);
       await expect(
@@ -389,7 +389,7 @@ describe('EventsService', () => {
           'event-uuid',
           updateEventDto,
           mockOrganizerId,
-          UserRole.ORGANIZADOR,
+          UserRole.ORGANIZER,
         ),
       ).rejects.toThrow(/ya finalizó/);
     });
@@ -407,7 +407,7 @@ describe('EventsService', () => {
           'event-uuid',
           updateEventDto,
           mockOrganizerId,
-          UserRole.ORGANIZADOR,
+          UserRole.ORGANIZER,
         ),
       ).rejects.toThrow(BadRequestException);
       await expect(
@@ -415,7 +415,7 @@ describe('EventsService', () => {
           'event-uuid',
           updateEventDto,
           mockOrganizerId,
-          UserRole.ORGANIZADOR,
+          UserRole.ORGANIZER,
         ),
       ).rejects.toThrow(/cancelado/);
     });
@@ -432,7 +432,7 @@ describe('EventsService', () => {
           'event-uuid',
           updateWithPastDate,
           mockOrganizerId,
-          UserRole.ORGANIZADOR,
+          UserRole.ORGANIZER,
         ),
       ).rejects.toThrow(BadRequestException);
       await expect(
@@ -440,7 +440,7 @@ describe('EventsService', () => {
           'event-uuid',
           updateWithPastDate,
           mockOrganizerId,
-          UserRole.ORGANIZADOR,
+          UserRole.ORGANIZER,
         ),
       ).rejects.toThrow(/debe ser en el futuro/);
     });
@@ -457,7 +457,7 @@ describe('EventsService', () => {
           'event-uuid',
           updateWithExceededCapacity,
           mockOrganizerId,
-          UserRole.ORGANIZADOR,
+          UserRole.ORGANIZER,
         ),
       ).rejects.toThrow(BadRequestException);
       await expect(
@@ -465,7 +465,7 @@ describe('EventsService', () => {
           'event-uuid',
           updateWithExceededCapacity,
           mockOrganizerId,
-          UserRole.ORGANIZADOR,
+          UserRole.ORGANIZER,
         ),
       ).rejects.toThrow(/excede la capacidad del recinto/);
     });
@@ -482,7 +482,7 @@ describe('EventsService', () => {
           'event-uuid',
           updateWithLessTickets,
           mockOrganizerId,
-          UserRole.ORGANIZADOR,
+          UserRole.ORGANIZER,
         ),
       ).rejects.toThrow(BadRequestException);
       await expect(
@@ -490,7 +490,7 @@ describe('EventsService', () => {
           'event-uuid',
           updateWithLessTickets,
           mockOrganizerId,
-          UserRole.ORGANIZADOR,
+          UserRole.ORGANIZER,
         ),
       ).rejects.toThrow(/boletos ya vendidos/);
     });
@@ -517,7 +517,7 @@ describe('EventsService', () => {
       const result = await service.cancel(
         'event-uuid',
         mockOrganizerId,
-        UserRole.ORGANIZADOR,
+        UserRole.ORGANIZER,
       );
 
       expect(result.isCancelled).toBe(true);
@@ -529,7 +529,7 @@ describe('EventsService', () => {
       mockEventRepository.findOne.mockResolvedValue(eventToCancel);
 
       await expect(
-        service.cancel('event-uuid', 'different-user-id', UserRole.ORGANIZADOR),
+        service.cancel('event-uuid', 'different-user-id', UserRole.ORGANIZER),
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -560,10 +560,10 @@ describe('EventsService', () => {
       mockEventRepository.findOne.mockResolvedValue(pastEvent);
 
       await expect(
-        service.cancel('event-uuid', mockOrganizerId, UserRole.ORGANIZADOR),
+        service.cancel('event-uuid', mockOrganizerId, UserRole.ORGANIZER),
       ).rejects.toThrow(BadRequestException);
       await expect(
-        service.cancel('event-uuid', mockOrganizerId, UserRole.ORGANIZADOR),
+        service.cancel('event-uuid', mockOrganizerId, UserRole.ORGANIZER),
       ).rejects.toThrow(/ya finalizó/);
     });
 
@@ -576,10 +576,10 @@ describe('EventsService', () => {
       mockEventRepository.findOne.mockResolvedValue(cancelledEvent);
 
       await expect(
-        service.cancel('event-uuid', mockOrganizerId, UserRole.ORGANIZADOR),
+        service.cancel('event-uuid', mockOrganizerId, UserRole.ORGANIZER),
       ).rejects.toThrow(BadRequestException);
       await expect(
-        service.cancel('event-uuid', mockOrganizerId, UserRole.ORGANIZADOR),
+        service.cancel('event-uuid', mockOrganizerId, UserRole.ORGANIZER),
       ).rejects.toThrow(/ya está cancelado/);
     });
   });

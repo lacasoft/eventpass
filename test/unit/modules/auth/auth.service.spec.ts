@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UnauthorizedException, ConflictException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { AuthService } from '../../../../src/modules/auth/auth.service';
 import { UsersService } from '../../../../src/modules/users/users.service';
@@ -26,7 +27,7 @@ describe('AuthService', () => {
     firstName: 'John',
     lastName: 'Doe',
     phone: null,
-    role: UserRole.CLIENTE,
+    role: UserRole.CUSTOMER,
     isActive: true,
     mustChangePassword: false,
     createdAt: new Date(),
@@ -63,6 +64,12 @@ describe('AuthService', () => {
     sendPasswordChangedConfirmation: jest.fn(),
   };
 
+  const mockCacheManager = {
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -82,6 +89,10 @@ describe('AuthService', () => {
         {
           provide: EmailService,
           useValue: mockEmailService,
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: mockCacheManager,
         },
       ],
     }).compile();
@@ -123,7 +134,7 @@ describe('AuthService', () => {
           email: newUser.email,
           firstName: newUser.firstName,
           lastName: newUser.lastName,
-          role: UserRole.CLIENTE,
+          role: UserRole.CUSTOMER,
           mustChangePassword: newUser.mustChangePassword,
         },
         token: 'access-token',
@@ -131,7 +142,7 @@ describe('AuthService', () => {
       });
       expect(usersService.findByEmail).toHaveBeenCalledWith(registerDto.email);
       expect(usersService.create).toHaveBeenCalledWith(
-        { ...registerDto, role: UserRole.CLIENTE },
+        { ...registerDto, role: UserRole.CUSTOMER },
         undefined,
       );
       expect(jwtService.signAsync).toHaveBeenCalledTimes(2);
@@ -154,7 +165,7 @@ describe('AuthService', () => {
       await service.register(registerDto);
 
       expect(usersService.create).toHaveBeenCalledWith(
-        expect.objectContaining({ role: UserRole.CLIENTE }),
+        expect.objectContaining({ role: UserRole.CUSTOMER }),
         undefined,
       );
     });

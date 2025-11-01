@@ -53,7 +53,7 @@ export class CreateUserDto {
 
   @ApiPropertyOptional({
     enum: UserRole,
-    example: UserRole.CLIENTE,
+    example: UserRole.CUSTOMER,
     description: 'Rol del usuario (solo puede ser asignado por admin/super-admin)',
   })
   @IsOptional()
